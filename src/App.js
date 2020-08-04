@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
-
 // Normalizes string as a slug - a string that is safe to use
 // in both URLs and html attributes
 import slugify from 'slugify';
+
+import Header from './Header';
+import Processor from './Processor';
+import OperatingSystem from './OperatingSystem';
+import VideoCard from './VideoCard';
+import Display from './Display';
+import Cart from './Cart';
 
 import './App.css';
 
@@ -44,8 +50,8 @@ class App extends Component {
   };
 
   render() {
-    const features = Object.keys(this.props.features).map((feature, idx) => {
-      const featureHash = feature + '-' + idx;
+    let optionsGlobal = {};
+    Object.keys(this.props.features).map((feature, idx) => {
       const options = this.props.features[feature].map(item => {
         const itemHash = slugify(JSON.stringify(item));
         return (
@@ -64,16 +70,10 @@ class App extends Component {
           </div>
         );
       });
-
-      return (
-        <fieldset className="feature" key={featureHash}>
-          <legend className="feature__name">
-            <h3>{feature}</h3>
-          </legend>
-          {options}
-        </fieldset>
-      );
+      optionsGlobal[feature] = options;
+      return (<></>);
     });
+    
 
     const summary = Object.keys(this.state.selected).map((feature, idx) => {
       const featureHash = feature + '-' + idx;
@@ -97,24 +97,16 @@ class App extends Component {
 
     return (
       <div className="App">
-        <header>
-          <h1>ELF Computing | Laptops</h1>
-        </header>
+        <Header />
         <main>
           <form className="main__form">
             <h2>Customize your laptop</h2>
-            {features}
+            <Processor optionsProp={optionsGlobal['Processor']}/>
+            <OperatingSystem optionsProp={optionsGlobal['Operating System']} />
+            <VideoCard optionsProp={optionsGlobal['Video Card']}/>
+            <Display optionsProp={optionsGlobal['Display']}/>
           </form>
-          <section className="main__summary">
-            <h2>Your cart</h2>
-            {summary}
-            <div className="summary__total">
-              <div className="summary__total__label">Total</div>
-              <div className="summary__total__value">
-                {USCurrencyFormat.format(total)}
-              </div>
-            </div>
-          </section>
+          <Cart summaryProp={summary} totalProp={total} currencyProp={USCurrencyFormat}/>
         </main>
       </div>
     );
